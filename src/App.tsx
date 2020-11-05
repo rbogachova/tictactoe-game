@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {connect} from "react-redux";
+import {ICell, IState} from "./redux/types";
+import {v4 as uuidv4} from 'uuid';
+import Cell from "./Cell";
+import './app.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
-export default App;
+const renderCell = (cell: ICell): JSX.Element =>
+    <Cell key={uuidv4()} cell={cell}/>;
+
+const renderRow = (row: ICell[]) =>
+    <div key={uuidv4()}>{row.map(renderCell)}</div>;
+
+const App: React.FC<Props> = (props) => {
+    return (
+        <div className="App">
+            <h1>TIC TAC TOE</h1>
+            {props.board.map(renderRow)}
+        </div>
+    );
+};
+
+const mapStateToProps = (state: IState) => ({
+    board: state.board
+});
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
