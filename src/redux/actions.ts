@@ -1,7 +1,7 @@
 import {createAction} from "./utilities";
 
-export const markWithCrossActionType = 'MARK_WITH_CROSS';
+export const markCellActionType = 'MARK_CELL';
 
-export const createMarkWithCrossAction = (rowIndex: number, columnIndex: number) => {
-    return createAction(markWithCrossActionType, {rowIndex, columnIndex});
+export const createMarkCellAction = (rowIndex: number, columnIndex: number) => {
+    return createAction(markCellActionType, {rowIndex, columnIndex});
 };

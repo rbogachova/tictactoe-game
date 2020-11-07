@@ -3,27 +3,25 @@ import {connect} from "react-redux";
 import {ICell, IState} from "./redux/types";
 import './app.css';
 import './cell.css';
-import {createMarkWithCrossAction} from "./redux/actions";
+import {createMarkCellAction} from "./redux/actions";
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps & { cell: ICell };
 
 const Cell: React.FC<Props> = (props) => {
-    const markWithCross = (): void => {
-        props.markWithCross(props.cell.rowIndex, props.cell.columnIndex);
+    const markCell = (): void => {
+        props.markCell(props.cell.rowIndex, props.cell.columnIndex);
     };
 
     function renderCell() {
-        if (props.cell.isCrossed)
-            return "X";
-        else if (!props.cell.isCrossed)
-            return "O";
-        else return null;
+        if (props.cell.isCrossed == null)
+            return null;
+        return props.cell.isCrossed ? 'X' : '0';
     }
 
     return (
         <span className="initialCell"
-              onClick={markWithCross}>
-            {renderCell}
+              onClick={markCell}>
+            {renderCell()}
         </span>
     );
 };
@@ -33,7 +31,7 @@ const mapStateToProps = (state: IState) => ({
 });
 
 const mapDispatchToProps = {
-    markWithCross: createMarkWithCrossAction
+    markCell: createMarkCellAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Cell);

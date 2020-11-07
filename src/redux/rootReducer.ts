@@ -1,5 +1,5 @@
 import {Action, ICell, IState} from "./types";
-import {markWithCrossActionType} from "./actions";
+import {markCellActionType} from "./actions";
 
 function createBoard(): ICell[][] {
     const board: ICell[][] = [];
@@ -12,45 +12,44 @@ function createBoard(): ICell[][] {
                 rowIndex,
                 columnIndex
             };
-
             board[rowIndex][columnIndex] = cell;
         }
     }
-
     return board;
 }
 
-const initialState = {
+const initialState: IState = {
     board: createBoard(),
-    isGameEnded: false
+    isGameEnded: false,
+    isCrossTurn: true
 };
 
 const copyBoard = (board: ICell[][]): ICell[][] =>
     board.map(row => row.map(cell => cell));
 
-function countCells(board: ICell[][], cellChecker: (cell: ICell) => boolean): number {
-    return board
-        .map(row => row.reduce((acc, cell) => cellChecker(cell) ? acc + 1 : acc, 0))
-        .reduce((acc, rowCellCount) => acc + rowCellCount);
-}
+function markCell(state: IState, rowIndex: number, columnIndex: number): void {
+    const currentCell = state.board[rowIndex][columnIndex];
 
-function markWithCross(board: ICell[][], cell: ICell): void {
-    const crossCount: number = countCells(board, cell => cell.isCrossed === true);
-    const zeroCount: number = countCells(board, cell => cell.isCrossed === false);
+    if (currentCell.isCrossed !== null)
+        return;
 
-    if (cell.isCrossed === null && crossCount === 0 || crossCount === zeroCount)
-        cell.isCrossed = true;
-    else cell.isCrossed = false;
+    if (state.isCrossTurn) {
+        currentCell.isCrossed = true;
+        state.isCrossTurn = false;
+    } else {
+        currentCell.isCrossed = false;
+        state.isCrossTurn = true;
+    }
 }
 
 export const rootReducer = (state: IState = initialState, action: Action): IState => {
     switch (action.type) {
-        case markWithCrossActionType: {
-            const newBoard: ICell[][] = copyBoard(state.board);
-            const currentCell: ICell = newBoard[action.payload.rowIndex][action.payload.columnIndex];
-            markWithCross(newBoard, currentCell);
+        case markCellActionType: {
+            const newBoard = copyBoard(state.board);
+            const newState = {...state, board: newBoard};
+            markCell(newState, action.payload.rowIndex, action.payload.columnIndex);
 
-            return {...state, board: newBoard};
+            return newState;
         }
     }
     return state;
