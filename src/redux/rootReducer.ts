@@ -1,10 +1,28 @@
-import {Action, ICell, IState, MarkerType} from "./types";
-import {markCellActionType, restartGameActionType} from "./actions";
+import {Action, Game, ICell, IState, MarkerType} from "./types";
+import {changeGameActionType, markCellActionType, restartGameActionType} from "./actions";
 
-const boardDimension = 10;
-const winningSequenceLength = 5;
+let boardDimension: number;
+let winningSequenceLength: number;
 
-function createBoard(): ICell[][] {
+function createBoard(gameName: Game): ICell[][] {
+    switch (gameName) {
+        case Game.ticTacToe: {
+            boardDimension = 3;
+            winningSequenceLength = 3;
+            break;
+        }
+        case Game.gomoku1: {
+            boardDimension = 10;
+            winningSequenceLength = 5;
+            break;
+        }
+        case Game.gomoku2: {
+            boardDimension = 20;
+            winningSequenceLength = 5;
+            break;
+        }
+    }
+
     const board: ICell[][] = [];
 
     for (let rowIndex = 0; rowIndex < boardDimension; rowIndex++) {
@@ -22,9 +40,10 @@ function createBoard(): ICell[][] {
 }
 
 const initialState: IState = {
-    board: createBoard(),
+    board: createBoard(Game.ticTacToe),
     currentTurnMarkerType: MarkerType.cross,
-    isWinner: false
+    isWinner: false,
+    currentGame: Game.ticTacToe
 };
 
 function countRowSideSequentCells(row: ICell[], currentIndex: number, step: number): number {
@@ -108,11 +127,12 @@ function markCell(state: IState, rowIndex: number, columnIndex: number): void {
     }
 }
 
-function createState(): IState {
+function createState(gameName: Game): IState {
     return {
-        board: createBoard(),
+        board: createBoard(gameName),
         currentTurnMarkerType: MarkerType.cross,
-        isWinner: false
+        isWinner: false,
+        currentGame: gameName
     }
 }
 
@@ -131,7 +151,13 @@ export const rootReducer = (state: IState = initialState, action: Action): IStat
         }
 
         case restartGameActionType: {
-            const newState = createState();
+            const newState = createState(state.currentGame);
+
+            return newState;
+        }
+
+        case changeGameActionType: {
+            const newState = createState(action.payload.gameName);
 
             return newState;
         }

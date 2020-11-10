@@ -6,7 +6,7 @@ import Cell from "./Cell";
 import './app.css';
 import {Alert} from "antd";
 import 'antd/dist/antd.css';
-import {createRestartGameAction} from "./redux/actions";
+import {createChangeGameAction, createRestartGameAction} from "./redux/actions";
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
@@ -21,15 +21,42 @@ const App: React.FC<Props> = (props) => {
         props.restartGame();
     }
 
+    function changeGame(e: React.FormEvent<HTMLSelectElement>) {
+        props.changeGame(+e.currentTarget.value);
+    }
+
     const showCrossCongratulationsMessage = (): JSX.Element =>
         <Alert message="YOU WON!"
                type="success"
                closable
                onClick={restart}/>;
 
+    function renderCurrentGameName() {
+        return props.currentGame === 0 ? "TIC TAC TOE" : "GOMOKU";
+    }
+
     return (
-        <div className="App">
-            <h1>TIC TAC TOE</h1>
+        <div className="app">
+            <table className="center">
+                <tbody>
+                <tr>
+                    <td>
+                        <h1>{renderCurrentGameName()}</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>Game Type </span>
+                        <select name="gameNames" id="gameNames" onChange={changeGame}>
+                            <option value="0">TIC TAC TOE</option>
+                            <option value="1">GOMOKU 10 x 10</option>
+                            <option value="2">GOMOKU 20 x 20</option>
+                        </select>
+                        <button onClick={restart}>Restart</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
             {props.board.map(renderRow)}
             {props.isWinner && showCrossCongratulationsMessage()}
         </div>
@@ -39,11 +66,13 @@ const App: React.FC<Props> = (props) => {
 const mapStateToProps = (state: IState) => ({
     board: state.board,
     isWinner: state.isWinner,
-    currentTurnMarkerType: state.currentTurnMarkerType
+    currentTurnMarkerType: state.currentTurnMarkerType,
+    currentGame: state.currentGame
 });
 
 const mapDispatchToProps = {
-    restartGame: createRestartGameAction
+    restartGame: createRestartGameAction,
+    changeGame: createChangeGameAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

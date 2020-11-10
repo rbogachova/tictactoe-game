@@ -1,8 +1,14 @@
-import {createMarkCellAction, createRestartGameAction} from "./actions";
+import {createChangeGameAction, createMarkCellAction, createRestartGameAction} from "./actions";
 
 export enum MarkerType {
     cross,
     zero
+}
+
+export enum Game {
+    ticTacToe,
+    gomoku1,
+    gomoku2
 }
 
 export interface ICell {
@@ -14,7 +20,8 @@ export interface ICell {
 export interface IState {
     board: ICell[][],
     currentTurnMarkerType: MarkerType,
-    isWinner: boolean
+    isWinner: boolean,
+    currentGame: Game
 }
 
-export type Action = ReturnType<typeof createMarkCellAction | typeof createRestartGameAction>
+export type Action = ReturnType<typeof createMarkCellAction | typeof createRestartGameAction | typeof createChangeGameAction>
