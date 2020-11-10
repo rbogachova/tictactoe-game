@@ -1,8 +1,8 @@
 import {Action, ICell, IState, MarkerType} from "./types";
 import {markCellActionType, restartGameActionType} from "./actions";
 
-const boardDimension = 3;
-const winningSequenceLength = 3;
+const boardDimension = 10;
+const winningSequenceLength = 5;
 
 function createBoard(): ICell[][] {
     const board: ICell[][] = [];
@@ -39,13 +39,53 @@ function countRowSideSequentCells(row: ICell[], currentIndex: number, step: numb
     return count;
 }
 
+function countColumnSideSequentCells(board: ICell[][], currentRowIndex: number, currentColumnIndex: number, step: number): number {
+    const markerType = board[currentRowIndex][currentColumnIndex].markerType;
+    let count = 0;
+
+    for (let i = currentRowIndex + step; i >= 0 && i < board.length; i += step) {
+        if (board[i][currentColumnIndex].markerType !== markerType)
+            return count;
+        count++;
+    }
+
+    return count;
+}
+
+function countDiagonalSideSequentCells(board: ICell[][], currentRowIndex: number, currentColumnIndex: number, step1: number, step2: number): number {
+    const markerType = board[currentRowIndex][currentColumnIndex].markerType;
+    let count = 0;
+
+    for (let i = currentRowIndex + step1, j = currentColumnIndex + step2; i >= 0 && i < board.length && j >= 0 && j < board[i].length; i += step1, j += step2) {
+        if (board[i][j].markerType !== markerType)
+            return count;
+        count++;
+    }
+
+    return count;
+}
+
 function countRowSequentCells(row: ICell[], currentIndex: number): number {
     return 1 + countRowSideSequentCells(row, currentIndex, -1) + countRowSideSequentCells(row, currentIndex, 1);
 }
 
+function countColumnSequentCells(board: ICell[][], currentRowIndex: number, currentColumnIndex: number): number {
+    return 1 + countColumnSideSequentCells(board, currentRowIndex, currentColumnIndex, -1) + countColumnSideSequentCells(board, currentRowIndex, currentColumnIndex, 1);
+}
+
+function countRightDiagonalSequentCells(board: ICell[][], currentRowIndex: number, currentColumnIndex: number): number {
+    return 1 + countDiagonalSideSequentCells(board, currentRowIndex, currentColumnIndex, -1, 1) + countDiagonalSideSequentCells(board, currentRowIndex, currentColumnIndex, 1, -1);
+}
+
+function countLeftDiagonalSequentCells(board: ICell[][], currentRowIndex: number, currentColumnIndex: number): number {
+    return 1 + countDiagonalSideSequentCells(board, currentRowIndex, currentColumnIndex, -1, -1) + countDiagonalSideSequentCells(board, currentRowIndex, currentColumnIndex, 1, 1);
+}
+
 function isWinningSequence(board: ICell[][], rowIndex: number, columnIndex: number): boolean {
-    // Check row sequence.
-    return countRowSequentCells(board[rowIndex], columnIndex) >= winningSequenceLength;
+    return countRowSequentCells(board[rowIndex], columnIndex) >= winningSequenceLength ||
+        countColumnSequentCells(board, rowIndex, columnIndex) >= winningSequenceLength ||
+        countRightDiagonalSequentCells(board, rowIndex, columnIndex) >= winningSequenceLength ||
+        countLeftDiagonalSequentCells(board, rowIndex, columnIndex) >= winningSequenceLength;
 }
 
 function markCell(state: IState, rowIndex: number, columnIndex: number): void {
