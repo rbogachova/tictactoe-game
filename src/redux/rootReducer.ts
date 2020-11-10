@@ -1,14 +1,17 @@
-import {Action, ICell, IState, PlayerType} from "./types";
+import {Action, ICell, IState, MarkerType} from "./types";
 import {markCellActionType} from "./actions";
+
+const boardDimension = 3;
+const winningSequenceLength = 3;
 
 function createBoard(): ICell[][] {
     const board: ICell[][] = [];
 
-    for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+    for (let rowIndex = 0; rowIndex < boardDimension; rowIndex++) {
         board[rowIndex] = [];
-        for (let columnIndex = 0; columnIndex < 3; columnIndex++) {
+        for (let columnIndex = 0; columnIndex < boardDimension; columnIndex++) {
             const cell: ICell = {
-                marked: null,
+                markerType: null,
                 rowIndex,
                 columnIndex
             };
@@ -20,52 +23,50 @@ function createBoard(): ICell[][] {
 
 const initialState: IState = {
     board: createBoard(),
-    turn: PlayerType.cross,
-    isGameEnded: false,
-    winner: null
+    currentTurnMarkerType: MarkerType.cross,
+    isWinner: false
 };
 
-function countRowSequentCells(row: ICell[], cellIndex: number, cellSequence: number, playerType: PlayerType): number {
-    let sequentCellCount = 0;
+function countRowSideSequentCells(row: ICell[], currentIndex: number, step: number): number {
+    const markerType = row[currentIndex].markerType;
+    let count = 0;
 
-    for (let cellIndexAdjustment = -cellSequence; cellIndexAdjustment <= cellSequence; cellIndexAdjustment++) {
-        if (cellIndexAdjustment === 0)
-            continue;
-        if (row[cellIndex + cellIndexAdjustment].marked === playerType)
-            sequentCellCount++;
+    for (let i = currentIndex + step; i >= 0 && i < row.length; i += step) {
+        if (row[i].markerType !== markerType)
+            return count;
+        count++;
     }
-    return sequentCellCount;
+    return count;
 }
 
-function isWinningSequence(board: ICell[][], rowIndex: number, columnIndex: number, cellSequence: number, player: PlayerType): boolean {
+function countRowSequentCells(row: ICell[], currentIndex: number): number {
+    return 1 + countRowSideSequentCells(row, currentIndex, -1) + countRowSideSequentCells(row, currentIndex, 1);
+}
+
+function isWinningSequence(board: ICell[][], rowIndex: number, columnIndex: number): boolean {
     // Check row sequence.
-    return countRowSequentCells(board[rowIndex], columnIndex, cellSequence, player) === cellSequence;
-}
-
-function copyBoard(board: ICell[][]): ICell[][] {
-    return board.map(row => row.map(cell => cell));
-}
-
-function resolveMove(state: IState, currentCell: ICell, playerType: PlayerType): void {
-    currentCell.marked = playerType;
-
-    if (isWinningSequence(state.board, currentCell.rowIndex, currentCell.columnIndex, 3, playerType)) {
-        state.isGameEnded = true;
-        state.winner = playerType;
-    } else
-        state.turn = playerType === PlayerType.cross ? PlayerType.zero : PlayerType.cross;
+    return countRowSequentCells(board[rowIndex], columnIndex) >= winningSequenceLength;
 }
 
 function markCell(state: IState, rowIndex: number, columnIndex: number): void {
     const currentCell = state.board[rowIndex][columnIndex];
 
-    if (currentCell.marked !== null)
+    if (currentCell.markerType != null)
         return;
 
-    if (state.turn === PlayerType.cross)
-        resolveMove(state, currentCell, PlayerType.cross);
-    else
-        resolveMove(state, currentCell, PlayerType.zero);
+    currentCell.markerType = state.currentTurnMarkerType;
+
+    if (isWinningSequence(state.board, currentCell.rowIndex, currentCell.columnIndex)) {
+        state.isWinner = true;
+    } else {
+        state.currentTurnMarkerType = state.currentTurnMarkerType === MarkerType.cross
+            ? MarkerType.zero
+            : MarkerType.cross;
+    }
+}
+
+function copyBoard(board: ICell[][]): ICell[][] {
+    return board.map(row => row.map(cell => cell));
 }
 
 export const rootReducer = (state: IState = initialState, action: Action): IState => {

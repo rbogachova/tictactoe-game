@@ -1,21 +1,20 @@
 import {createMarkCellAction} from "./actions";
 
-export enum PlayerType {
+export enum MarkerType {
     cross,
     zero
 }
 
 export interface ICell {
-    marked: PlayerType | null,
+    markerType: MarkerType | null,
     rowIndex: number,
     columnIndex: number
 }
 
 export interface IState {
     board: ICell[][],
-    turn: PlayerType,
-    isGameEnded: boolean,
-    winner: PlayerType | null
+    currentTurnMarkerType: MarkerType,
+    isWinner: boolean
 }
 
 export type Action = ReturnType<typeof createMarkCellAction>

@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {ICell, IState, PlayerType} from "./redux/types";
+import {ICell, IState, MarkerType} from "./redux/types";
 import './app.css';
 import './cell.css';
 import {createMarkCellAction} from "./redux/actions";
@@ -13,9 +13,9 @@ const Cell: React.FC<Props> = (props) => {
     };
 
     function renderCell() {
-        if (props.cell.marked === null)
+        if (props.cell.markerType === null)
             return null;
-        return props.cell.marked === PlayerType.cross ? 'X' : '0';
+        return props.cell.markerType === MarkerType.cross ? 'X' : '0';
     }
 
     return (
