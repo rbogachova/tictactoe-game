@@ -1,5 +1,5 @@
 import {Action, ICell, IState, MarkerType} from "./types";
-import {markCellActionType} from "./actions";
+import {markCellActionType, restartGameActionType} from "./actions";
 
 const boardDimension = 3;
 const winningSequenceLength = 3;
@@ -49,6 +49,9 @@ function isWinningSequence(board: ICell[][], rowIndex: number, columnIndex: numb
 }
 
 function markCell(state: IState, rowIndex: number, columnIndex: number): void {
+    if (state.isWinner)
+        return;
+
     const currentCell = state.board[rowIndex][columnIndex];
 
     if (currentCell.markerType != null)
@@ -65,6 +68,14 @@ function markCell(state: IState, rowIndex: number, columnIndex: number): void {
     }
 }
 
+function createState(): IState {
+    return {
+        board: createBoard(),
+        currentTurnMarkerType: MarkerType.cross,
+        isWinner: false
+    }
+}
+
 function copyBoard(board: ICell[][]): ICell[][] {
     return board.map(row => row.map(cell => cell));
 }
@@ -75,6 +86,12 @@ export const rootReducer = (state: IState = initialState, action: Action): IStat
             const newBoard = copyBoard(state.board);
             const newState = {...state, board: newBoard};
             markCell(newState, action.payload.rowIndex, action.payload.columnIndex);
+
+            return newState;
+        }
+
+        case restartGameActionType: {
+            const newState = createState();
 
             return newState;
         }

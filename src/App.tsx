@@ -1,10 +1,12 @@
 import React from "react";
 import {connect} from "react-redux";
-import {ICell, IState, MarkerType} from "./redux/types";
+import {ICell, IState} from "./redux/types";
 import {v4 as uuidv4} from 'uuid';
 import Cell from "./Cell";
 import './app.css';
 import {Alert} from "antd";
+import 'antd/dist/antd.css';
+import {createRestartGameAction} from "./redux/actions";
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
@@ -15,16 +17,21 @@ const renderRow = (row: ICell[]) =>
     <div key={uuidv4()}>{row.map(renderCell)}</div>;
 
 const App: React.FC<Props> = (props) => {
+    function restart() {
+        props.restartGame();
+    }
+
     const showCrossCongratulationsMessage = (): JSX.Element =>
-        <Alert message="CROSSES WON!"
+        <Alert message="YOU WON!"
                type="success"
-               closable/>;
+               closable
+               onClick={restart}/>;
 
     return (
         <div className="App">
             <h1>TIC TAC TOE</h1>
             {props.board.map(renderRow)}
-            {props.isWinner && props.currentTurnMarkerType === MarkerType.cross && showCrossCongratulationsMessage()}
+            {props.isWinner && showCrossCongratulationsMessage()}
         </div>
     );
 };
@@ -35,6 +42,8 @@ const mapStateToProps = (state: IState) => ({
     currentTurnMarkerType: state.currentTurnMarkerType
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+    restartGame: createRestartGameAction
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

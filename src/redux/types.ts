@@ -1,4 +1,4 @@
-import {createMarkCellAction} from "./actions";
+import {createMarkCellAction, createRestartGameAction} from "./actions";
 
 export enum MarkerType {
     cross,
@@ -17,4 +17,4 @@ export interface IState {
     isWinner: boolean
 }
 
-export type Action = ReturnType<typeof createMarkCellAction>
+export type Action = ReturnType<typeof createMarkCellAction | typeof createRestartGameAction>
