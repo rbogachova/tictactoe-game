@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {ICell, IState} from "./redux/types";
+import {ICell, IState, MarkerType} from "./redux/types";
 import {v4 as uuidv4} from 'uuid';
 import Cell from "./Cell";
 import './app.css';
@@ -25,14 +25,25 @@ const App: React.FC<Props> = (props) => {
         props.changeGame(+e.currentTarget.value);
     }
 
+    const defineWinner = () => {
+
+    };
+
     const showCrossCongratulationsMessage = (): JSX.Element =>
-        <Alert message="YOU WON!"
+        <Alert message="{winner} WON!"
                type="success"
                closable
-               onClick={restart}/>;
+               onClick={restart}/>
+    ;
 
     function renderCurrentGameName() {
         return props.currentGame === 0 ? "TIC TAC TOE" : "GOMOKU";
+    }
+
+    function showTurn() {
+        if (props.currentTurnMarkerType === MarkerType.cross)
+            return "X";
+        return "0";
     }
 
     return (
@@ -55,6 +66,9 @@ const App: React.FC<Props> = (props) => {
                         <button onClick={restart}>Restart</button>
                     </td>
                 </tr>
+                <tr>
+                    <td>Current Turn: {showTurn()}</td>
+                </tr>
                 </tbody>
             </table>
             {props.board.map(renderRow)}
@@ -67,7 +81,7 @@ const mapStateToProps = (state: IState) => ({
     board: state.board,
     isWinner: state.isWinner,
     currentTurnMarkerType: state.currentTurnMarkerType,
-    currentGame: state.currentGame
+    currentGame: state.currentGameMode
 });
 
 const mapDispatchToProps = {

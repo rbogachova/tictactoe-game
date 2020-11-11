@@ -1,33 +1,33 @@
-import {Action, Game, ICell, IState, MarkerType} from "./types";
+import {Action, GameConfiguration, GameMode, ICell, IState, MarkerType} from "./types";
 import {changeGameActionType, markCellActionType, restartGameActionType} from "./actions";
 
-let boardDimension: number;
-let winningSequenceLength: number;
+function getGameConfiguration(gameMode: GameMode): GameConfiguration {
+    if (gameMode === GameMode.ticTacToe)
+        return {
+            boardDimension: 3,
+            winningSequenceLength: 3
+        };
+    if (gameMode === GameMode.gomoku1)
+        return {
+            boardDimension: 10,
+            winningSequenceLength: 5
+        };
+    if (gameMode === GameMode.gomoku2)
+        return {
+            boardDimension: 20,
+            winningSequenceLength: 5
+        };
+    throw new Error("No game mode provided.");
+}
 
-function createBoard(gameName: Game): ICell[][] {
-    switch (gameName) {
-        case Game.ticTacToe: {
-            boardDimension = 3;
-            winningSequenceLength = 3;
-            break;
-        }
-        case Game.gomoku1: {
-            boardDimension = 10;
-            winningSequenceLength = 5;
-            break;
-        }
-        case Game.gomoku2: {
-            boardDimension = 20;
-            winningSequenceLength = 5;
-            break;
-        }
-    }
+function createBoard(gameMode: GameMode): ICell[][] {
+    const gameConfiguration = getGameConfiguration(gameMode);
 
     const board: ICell[][] = [];
 
-    for (let rowIndex = 0; rowIndex < boardDimension; rowIndex++) {
+    for (let rowIndex = 0; rowIndex < gameConfiguration.boardDimension; rowIndex++) {
         board[rowIndex] = [];
-        for (let columnIndex = 0; columnIndex < boardDimension; columnIndex++) {
+        for (let columnIndex = 0; columnIndex < gameConfiguration.boardDimension; columnIndex++) {
             const cell: ICell = {
                 markerType: null,
                 rowIndex,
@@ -40,10 +40,11 @@ function createBoard(gameName: Game): ICell[][] {
 }
 
 const initialState: IState = {
-    board: createBoard(Game.ticTacToe),
+    board: createBoard(GameMode.ticTacToe),
     currentTurnMarkerType: MarkerType.cross,
     isWinner: false,
-    currentGame: Game.ticTacToe
+    currentGameMode: GameMode.ticTacToe,
+    gameConfiguration: getGameConfiguration(GameMode.ticTacToe)
 };
 
 function countRowSideSequentCells(row: ICell[], currentIndex: number, step: number): number {
@@ -100,7 +101,10 @@ function countLeftDiagonalSequentCells(board: ICell[][], currentRowIndex: number
     return 1 + countDiagonalSideSequentCells(board, currentRowIndex, currentColumnIndex, -1, -1) + countDiagonalSideSequentCells(board, currentRowIndex, currentColumnIndex, 1, 1);
 }
 
-function isWinningSequence(board: ICell[][], rowIndex: number, columnIndex: number): boolean {
+function isWinningSequence(state: IState, rowIndex: number, columnIndex: number): boolean {
+    const board = state.board;
+    const winningSequenceLength = state.gameConfiguration.winningSequenceLength;
+
     return countRowSequentCells(board[rowIndex], columnIndex) >= winningSequenceLength ||
         countColumnSequentCells(board, rowIndex, columnIndex) >= winningSequenceLength ||
         countRightDiagonalSequentCells(board, rowIndex, columnIndex) >= winningSequenceLength ||
@@ -118,7 +122,7 @@ function markCell(state: IState, rowIndex: number, columnIndex: number): void {
 
     currentCell.markerType = state.currentTurnMarkerType;
 
-    if (isWinningSequence(state.board, currentCell.rowIndex, currentCell.columnIndex)) {
+    if (isWinningSequence(state, currentCell.rowIndex, currentCell.columnIndex)) {
         state.isWinner = true;
     } else {
         state.currentTurnMarkerType = state.currentTurnMarkerType === MarkerType.cross
@@ -127,12 +131,13 @@ function markCell(state: IState, rowIndex: number, columnIndex: number): void {
     }
 }
 
-function createState(gameName: Game): IState {
+function createState(gameMode: GameMode): IState {
     return {
-        board: createBoard(gameName),
+        board: createBoard(gameMode),
         currentTurnMarkerType: MarkerType.cross,
         isWinner: false,
-        currentGame: gameName
+        currentGameMode: gameMode,
+        gameConfiguration: getGameConfiguration(gameMode)
     }
 }
 
@@ -151,7 +156,7 @@ export const rootReducer = (state: IState = initialState, action: Action): IStat
         }
 
         case restartGameActionType: {
-            const newState = createState(state.currentGame);
+            const newState = createState(state.currentGameMode);
 
             return newState;
         }

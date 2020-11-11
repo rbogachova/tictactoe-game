@@ -1,11 +1,12 @@
 import {createChangeGameAction, createMarkCellAction, createRestartGameAction} from "./actions";
+import {interfaceDeclaration} from "@babel/types";
 
 export enum MarkerType {
     cross,
     zero
 }
 
-export enum Game {
+export enum GameMode {
     ticTacToe,
     gomoku1,
     gomoku2
@@ -17,11 +18,17 @@ export interface ICell {
     columnIndex: number
 }
 
+export interface GameConfiguration {
+    boardDimension: number,
+    winningSequenceLength: number
+}
+
 export interface IState {
     board: ICell[][],
     currentTurnMarkerType: MarkerType,
     isWinner: boolean,
-    currentGame: Game
+    currentGameMode: GameMode,
+    gameConfiguration: GameConfiguration
 }
 
 export type Action = ReturnType<typeof createMarkCellAction | typeof createRestartGameAction | typeof createChangeGameAction>

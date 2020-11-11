@@ -1,5 +1,5 @@
 import {createAction} from "./utilities";
-import {Game} from "./types";
+import {GameMode} from "./types";
 
 export const markCellActionType = 'MARK_CELL';
 export const restartGameActionType = 'RESTART_GAME';
@@ -13,6 +13,6 @@ export const createRestartGameAction = () => {
     return createAction(restartGameActionType);
 };
 
-export const createChangeGameAction = (gameName: Game) => {
+export const createChangeGameAction = (gameName: GameMode) => {
     return createAction(changeGameActionType, {gameName});
 };
