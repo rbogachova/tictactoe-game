@@ -1,5 +1,12 @@
-import {Action, GameConfiguration, GameMode, ICell, IState, MarkerType} from "./types";
-import {changeGameActionType, markCellActionType, restartGameActionType} from "./actions";
+import {GameConfiguration, GameMode, ICell, IState, MarkerType} from "./types";
+import {
+    createChangeGameAction,
+    createMarkCellAction,
+    createRestartGameAction,
+    changeGameActionType,
+    markCellActionType,
+    restartGameActionType
+} from "./actions";
 
 function getGameConfiguration(gameMode: GameMode): GameConfiguration {
     switch (gameMode) {
@@ -146,6 +153,8 @@ function createState(gameMode: GameMode): IState {
 function copyBoard(board: ICell[][]): ICell[][] {
     return board.map(row => row.map(cell => cell));
 }
+
+type Action = ReturnType<typeof createMarkCellAction | typeof createRestartGameAction | typeof createChangeGameAction>;
 
 export const rootReducer = (state: IState = initialState, action: Action): IState => {
     switch (action.type) {

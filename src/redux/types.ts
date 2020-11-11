@@ -1,5 +1,3 @@
-import {createChangeGameAction, createMarkCellAction, createRestartGameAction} from "./actions";
-
 export enum MarkerType {
     cross,
     zero
@@ -29,5 +27,3 @@ export interface IState {
     currentGameMode: GameMode,
     gameConfiguration: GameConfiguration
 }
-
-export type Action = ReturnType<typeof createMarkCellAction | typeof createRestartGameAction | typeof createChangeGameAction>

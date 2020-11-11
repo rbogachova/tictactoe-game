@@ -1,22 +1,21 @@
 import React from "react";
 import {connect} from "react-redux";
 import {GameMode, ICell, IState, MarkerType} from "./redux/types";
-import {v4 as uuidv4} from 'uuid';
+import {v4 as uuid} from 'uuid';
 import Cell from "./Cell";
 import './app.css';
 import {Alert} from "antd";
 import 'antd/dist/antd.css';
 import {createChangeGameAction, createRestartGameAction} from "./redux/actions";
 import {selectAllCellsMarked} from "./redux/selectors";
-import {number} from "prop-types";
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
 const renderCell = (cell: ICell): JSX.Element =>
-    <Cell key={uuidv4()} cell={cell}/>;
+    <Cell key={uuid()} cell={cell}/>;
 
 const renderRow = (row: ICell[]) =>
-    <div key={uuidv4()}>{row.map(renderCell)}</div>;
+    <div key={uuid()}>{row.map(renderCell)}</div>;
 
 const App: React.FC<Props> = (props) => {
     function restart() {
@@ -39,14 +38,16 @@ const App: React.FC<Props> = (props) => {
                closable
                onClick={restart}/>;
 
-    function renderDrawMessage() {
-        if (props.checkAllCellsMarked && !props.isWinner)
-            return (
-                <Alert message="DRAW"
-                       type="success"
-                       closable
-                       onClick={restart}/>
-            )
+    function renderDrawMessage(): JSX.Element | null {
+        if (!props.checkAllCellsMarked || props.isWinner)
+            return null;
+
+        return (
+            <Alert message="DRAW"
+                   type="success"
+                   closable
+                   onClick={restart}/>
+        )
     }
 
     function renderCurrentGameName() {
