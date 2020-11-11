@@ -1,4 +1,4 @@
-import {GameConfiguration, GameMode, ICell, IState, MarkerType} from "./types";
+import {GameConfiguration, GameMode, ICell, IState, MarkerType} from "./models";
 import {
     createChangeGameAction,
     createMarkCellAction,

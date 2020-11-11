@@ -1,5 +1,5 @@
 import {createAction} from "./utilities";
-import {GameMode} from "./types";
+import {GameMode} from "./models";
 
 export const markCellActionType = 'MARK_CELL';
 export const restartGameActionType = 'RESTART_GAME';

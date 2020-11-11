@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {GameMode, ICell, IState, MarkerType} from "./redux/types";
+import {GameMode, ICell, IState, MarkerType} from "./redux/models";
 import {v4 as uuid} from 'uuid';
 import Cell from "./Cell";
 import './app.css';

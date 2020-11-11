@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {ICell, IState, MarkerType} from "./redux/types";
+import {ICell, IState, MarkerType} from "./redux/models";
 import './app.css';
 import './cell.css';
 import {createMarkCellAction} from "./redux/actions";

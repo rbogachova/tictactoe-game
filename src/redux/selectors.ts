@@ -1,4 +1,4 @@
-import {ICell, IState} from "./types";
+import {ICell, IState} from "./models";
 import {createSelector} from "reselect";
 
 const selectBoard = (state: IState): ICell[][] => state.board;
