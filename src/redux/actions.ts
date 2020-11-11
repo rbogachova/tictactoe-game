@@ -13,6 +13,6 @@ export const createRestartGameAction = () => {
     return createAction(restartGameActionType);
 };
 
-export const createChangeGameAction = (gameName: GameMode) => {
-    return createAction(changeGameActionType, {gameName});
+export const createChangeGameAction = (gameMode: GameMode) => {
+    return createAction(changeGameActionType, {gameMode: gameMode});
 };

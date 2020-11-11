@@ -2,22 +2,24 @@ import {Action, GameConfiguration, GameMode, ICell, IState, MarkerType} from "./
 import {changeGameActionType, markCellActionType, restartGameActionType} from "./actions";
 
 function getGameConfiguration(gameMode: GameMode): GameConfiguration {
-    if (gameMode === GameMode.ticTacToe)
-        return {
-            boardDimension: 3,
-            winningSequenceLength: 3
-        };
-    if (gameMode === GameMode.gomoku1)
-        return {
-            boardDimension: 10,
-            winningSequenceLength: 5
-        };
-    if (gameMode === GameMode.gomoku2)
-        return {
-            boardDimension: 20,
-            winningSequenceLength: 5
-        };
-    throw new Error("No game mode provided.");
+    switch (gameMode) {
+        case GameMode.ticTacToe:
+            return {
+                boardDimension: 3,
+                winningSequenceLength: 3
+            };
+        case GameMode.gomoku1:
+            return {
+                boardDimension: 10,
+                winningSequenceLength: 5
+            };
+        case GameMode.gomoku2:
+            return {
+                boardDimension: 20,
+                winningSequenceLength: 5
+            };
+    }
+    throw new Error("Invalid value.");
 }
 
 function createBoard(gameMode: GameMode): ICell[][] {
@@ -162,7 +164,7 @@ export const rootReducer = (state: IState = initialState, action: Action): IStat
         }
 
         case changeGameActionType: {
-            const newState = createState(action.payload.gameName);
+            const newState = createState(action.payload.gameMode);
 
             return newState;
         }

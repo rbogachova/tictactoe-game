@@ -1,5 +1,4 @@
 import {createChangeGameAction, createMarkCellAction, createRestartGameAction} from "./actions";
-import {interfaceDeclaration} from "@babel/types";
 
 export enum MarkerType {
     cross,
